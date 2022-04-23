@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name AtomIOExt-rescue)(type Legacy)(uri ${KIPRJMOD}/AtomIOExt-rescue.lib)(options "")(descr ""))
+  (lib (name DIN41612)(type Legacy)(uri /Users/roland/Documents/AtomIOExt/rescue-backup/Symbols_Socket-DIN41612_RevA.lib)(options "")(descr "")(disabled))
+)
