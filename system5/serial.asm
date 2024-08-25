@@ -1,5 +1,5 @@
-\ sideway rom for electron wifi board
-\ (c) roland leurs, may 2020
+\ WiFi driver for Acorn System 5
+\ (c) Roland Leurs, August 2024
 
 \ serial driver
 \ version 1.00 for 16c2552
@@ -101,7 +101,7 @@ bank_save = save_a
  lda uart_mcr       \ load modem control register
  and #&7E           \ set DTR low
  sta uart_mcr       \ write back to modem control register
- sta uart_msr       \ write to MSR to disable the UART reset (value don't care; handled by the CPLD!)
+ sta uart_msr       \ write to MSR to enable the UART reset (value don't care; handled by the CPLD!)
  rts                \ end of subroutine
 
 \ Reset the ESP8266 module
@@ -252,9 +252,6 @@ bank_save = save_a
 \ Set bank number
 \ Sets the bank number to the value of the lsb of A
 .set_bank_nr
-if __FPGATOM__
- sta bankreg
-else
  pha                \ save A register
  pha                \ save A register
  lda uart_mcr       \ load mcr
@@ -269,31 +266,20 @@ else
  ora uart_mcr       \ 'or' the A with the current value of the mcr
  sta uart_mcr       \ set the new value
  pla                \ restore A
-endif
  rts                \ end of routine
 
 \ Alternative bank number set routine, shorter and faster
 .set_bank_0         \ set it to 0
-if __FPGATOM__
- lda #0             \ load value
- sta bankreg
-else
  lda uart_mcr       \ load current value
  and #&F7           \ clear bit 3 (MFB)
  sta uart_mcr       \ write it back
-endif
  rts                \ end of routine
 
 \ Alternative bank number set routine, shorter and faster
 .set_bank_1         \ set it to 1
-if __FPGATOM__
- lda #1
- sta bankreg
-else
  lda uart_mcr       \ load current value
  ora #&08           \ clear bit 3 (MFB)
  sta uart_mcr       \ write it back
-endif
  rts                \ end of routine
 
 \ Even more faster, write A to MCR

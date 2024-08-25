@@ -1,10 +1,11 @@
-\ Acorn Atom WiFi ROM
+\ Acorn Atom WiFi commands
 \ Settings, definitions and constants
 
 \ (C)Roland Leurs 2021
 \ Version 1.00 August 2021
 
 __FPGATOM__ = 0
+__CODE__    = &0700
 
 if __FPGATOM__
 
@@ -14,25 +15,29 @@ if __FPGATOM__
             pageram = &B100
             workspace = &0500       \ Base address of workspace
 			strbuf    = &0600       \ Some volatile memory area for string buffer
+			switch    = &BFFF       \ Sideways ram control register
+			shadow    = &BFFF       \ On FPGAtoms this register is readable
 
 else
 
-			uart    = &BD30         \ Base address for the 16C2552 UART B-port
-            pagereg = &BDFF
+            uart    = &BB30         \ Base address for the 16C2552 UART B-port
+            pagereg = &BBFF
             pageram = &BC00
-            workspace = &2800       \ Base address of workspace
-			strbuf    = &2880       \ Some volatile memory area for string buffer
+            workspace = &0500       \ Base address of workspace
+			strbuf    = &0600       \ Some volatile memory area for string buffer
+			switch    = &BFFF       \ Sideways ram control register
+			shadow    = &04FF       \ Set according to Branquar compilation
 
 endif
             timer     = workspace   \ Count down timer, 3 bytes
 			time_out  = timer+4     \ Time-out setting, 1 byte
             heap      = timer+8     \ Some volatile memory area for tempory storage
-			comvec    = &206        \ Command interpreter vector (oscli)
 
             osrdch    = &FFE3
             oswrch    = &FFF4
             osnewl    = &FFED
             oswait    = &FE66
+            keyscan   = &FE71
             comerr    = &F926      \ COM? error address
             printhex  = &F802      \ Print hex value of accu
             printtext = &F7D1      \ Print string until negative byte encountered
@@ -64,5 +69,5 @@ endif
             datalen = zp+13         \ data length counter, 2 bytes
 
 
-ORG &E000-22         ; it's a sideway ROM service and it contains an ATM header
-    
+ORG __CODE__-22   ; it contains an ATM header
+

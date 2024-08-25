@@ -1,45 +1,43 @@
-\ Acorn Atom WiFi ROM
+\ Acorn System 5 WiFi commands
 \ Settings, definitions and constants
 
-\ (C)Roland Leurs 2021
-\ Version 1.00 August 2021
+\ (C)Roland Leurs 2021 - 2024
+\ Atom Version 1.00 August 2021
+\ System Version 1.00 August 2024
 
-__FPGATOM__ = 0
+__ATOMSYS5__ = 0
+__CODE__    = &7200
+LINECOUNT   = 20
 
-if __FPGATOM__
-
-			uart    = &BFC0         \ Base address for the 16C2552 UART B-port
-            pagereg = &BFF8
-            bankreg = &BFF9
-            pageram = &B100
+if __ATOMSYS5__
+            \ Atom2k14 hardware simulating System5
+			uart    = &0830         \ Base address for the 16C2552 UART B-port
+            pagereg = &08FF
+            pageram = &0900
+            line = &100             \ address for command line pointer
             workspace = &0500       \ Base address of workspace
 			strbuf    = &0600       \ Some volatile memory area for string buffer
-
+			switch    = &0BFF       \ Sideways ram control register, not used in System hardware
+			shadow    = &0BFF       \ On FPGAtoms this register is readable
 else
-
-			uart    = &BD30         \ Base address for the 16C2552 UART B-port
-            pagereg = &BDFF
-            pageram = &BC00
-            workspace = &2800       \ Base address of workspace
-			strbuf    = &2880       \ Some volatile memory area for string buffer
-
+            line    = &140          \ address for command line pointer
+			uart    = &0B30         \ Base address for the 16C2552 UART B-port
+            pagereg = &0BFF
+            pageram = &0D00
+            workspace = &7000       \ Base address of workspace
+			strbuf    = &7100       \ Some volatile memory area for string buffer
+			switch    = &0BFF       \ Sideways ram control register, not used in System hardware
+			shadow    = &0BFF       \ Set according to Branquar compilation
 endif
             timer     = workspace   \ Count down timer, 3 bytes
 			time_out  = timer+4     \ Time-out setting, 1 byte
             heap      = timer+8     \ Some volatile memory area for tempory storage
-			comvec    = &206        \ Command interpreter vector (oscli)
 
             osrdch    = &FFE3
             oswrch    = &FFF4
+            osasci    = &FFE9
             osnewl    = &FFED
-            oswait    = &FE66
-            comerr    = &F926      \ COM? error address
-            printhex  = &F802      \ Print hex value of accu
-            printtext = &F7D1      \ Print string until negative byte encountered
-            skipspace = &F875      \ OS routine to read non-space character
-            skipspace1= &F876
 
-            line = &100            \ address for command line pointer
             zp = &80               \ workspace
 
 			save_a = zp+2          \ only used in driver, outside driver is may be used for "local" work
@@ -64,5 +62,5 @@ endif
             datalen = zp+13         \ data length counter, 2 bytes
 
 
-ORG &E000-22         ; it's a sideway ROM service and it contains an ATM header
-    
+ORG __CODE__-22   ; it contains an ATM header
+
